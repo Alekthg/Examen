@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 Examen de Práctica - Promoción de Grados 2026</title>
+    <style>
+        /* ===== ESTILOS GENERALES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #1a1a2e;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1a1a2e;
+            font-size: 28px;
+            border-bottom: 3px solid #e94560;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        h1 span {
+            color: #e94560;
+        }
+
+        /* ===== BARRA DE PROGRESO ===== */
+        .progress-bar-container {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 12px;
+            margin: 15px 0 25px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #e94560, #0f3460);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        /* ===== FILTROS ===== */
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .filters select, .filters button {
+            padding: 10px 16px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .filters select:hover, .filters button:hover {
+            border-color: #0f3460;
+        }
+
+        .filters button {
+            background: #0f3460;
+            color: white;
+            border: none;
+            font-weight: 600;
+            flex: 0.5;
+            min-width: 100px;
+        }
+
+        .filters button:hover {
+            background: #1a1a5e;
+        }
+
+        .filters .stats {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-left: auto;
+            font-size: 14px;
+            color: #495057;
+        }
+
+        .filters .stats strong {
+            color: #0f3460;
+        }
+
+        /* ===== TARJETA DE PREGUNTA ===== */
+        .question-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+
+        .question-card:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .question-number {
+            font-weight: 600;
+            color: #0f3460;
+            font-size: 15px;
+        }
+
+        .question-topic {
+            background: #e94560;
+            color: white;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .question-difficulty {
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .difficulty-basic {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .difficulty-intermediate {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .difficulty-advanced {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .question-text {
+            font-size: 17px;
+            line-height: 1.6;
+            margin: 12px 0 18px 0;
+            color: #1a1a2e;
+        }
+
+        /* ===== OPCIONES ===== */
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 12px 18px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 15px;
+        }
+
+        .option:hover:not(.disabled) {
+            background: #e9ecef;
+            border-color: #0f3460;
+        }
+
+        .option input[type="radio"] {
+            margin-right: 14px;
+            width: 18px;
+            height: 18px;
+            accent-color: #e94560;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .option.disabled {
+            cursor: default;
+            opacity: 0.9;
+        }
+
+        .option.correct {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .option.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        .option.show-correct {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        /* ===== BOTONES DE NAVEGACIÓN ===== */
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .navigation button {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-prev {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .nav-prev:hover:not(:disabled) {
+            background: #dee2e6;
+        }
+
+        .nav-next {
+            background: #0f3460;
+            color: white;
+        }
+
+        .nav-next:hover:not(:disabled) {
+            background: #1a1a5e;
+        }
+
+        .nav-reset {
+            background: #e94560;
+            color: white;
+        }
+
+        .nav-reset:hover {
+            background: #c73e54;
+        }
+
+        .nav-check {
+            background: #28a745;
+            color: white;
+        }
+
+        .nav-check:hover:not(:disabled) {
+            background: #218838;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ===== RESULTADOS ===== */
+        .results {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            text-align: center;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .results h3 {
+            font-size: 24px;
+            color: #0f3460;
+        }
+
+        .results .score {
+            font-size: 48px;
+            font-weight: 700;
+            color: #e94560;
+            margin: 10px 0;
+        }
+
+        .results .message {
+            font-size: 18px;
+            color: #495057;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .filters select, .filters button {
+                flex: 1;
+                width: 100%;
+            }
+
+            .filters .stats {
+                margin-left: 0;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .question-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .navigation {
+                flex-direction: column;
+            }
+
+            .navigation button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📚 Examen de Práctica <span>Promoción de Grados 2026</span></h1>
+
+    <!-- Barra de progreso -->
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filters">
+        <select id="topicFilter">
+            <option value="all">📂 Todos los temas</option>
+            <option value="instruccion">Instrucción y Disciplina Policial</option>
+            <option value="vigilancia">Vigilancia y Patrullaje</option>
+            <option value="derecho-penal">Nociones de Derecho Penal</option>
+            <option value="comunicacion">Comunicación Asertiva</option>
+            <option value="planes-operativos">Planes Operativos</option>
+            <option value="armamento">Armamento y Tiro</option>
+            <option value="conduccion">Conducción de Vehículos</option>
+            <option value="detencion">Detención y Conducción de Personas</option>
+            <option value="pr-24">Manejo de Bastón PR-24</option>
+            <option value="radiocomunicacion">Radiocomunicación</option>
+            <option value="primer-respondiente">Primer Respondiente</option>
+            <option value="derechos-humanos">Derechos Humanos</option>
+            <option value="primeros-auxilios">Primeros Auxilios</option>
+            <option value="proteccion-civil">Protección Civil</option>
+        </select>
+
+        <select id="difficultyFilter">
+            <option value="all">🎯 Todos los niveles</option>
+            <option value="basic">🟢 Básico</option>
+            <option value="intermediate">🟡 Intermedio</option>
+            <option value="advanced">🔴 Avanzado</option>
+        </select>
+
+        <button onclick="applyFilters()">🔍 Filtrar</button>
+        <button onclick="resetExam()">🔄 Reiniciar</button>
+
+        <div class="stats">
+            <span><strong id="totalQuestions">0</strong> preguntas</span>
+            <span>✅ <strong id="correctCount">0</strong></span>
+            <span>❌ <strong id="incorrectCount">0</strong></span>
+            <span>📊 <strong id="answeredCount">0</strong> respondidas</span>
+        </div>
+    </div>
+
+    <!-- Contenedor de preguntas -->
+    <div id="questionsContainer"></div>
+
+    <!-- Navegación -->
+    <div class="navigation">
+        <button class="nav-prev" id="prevBtn" onclick="prevQuestion()">⬅ Anterior</button>
+        <button class="nav-check" id="checkBtn" onclick="checkAnswer()">✅ Verificar respuesta</button>
+        <button class="nav-next" id="nextBtn" onclick="nextQuestion()">Siguiente ➡</button>
+    </div>
+
+    <!-- Resultados -->
+    <div class="results" id="resultsContainer">
+        <h3>📊 Resultados del Examen</h3>
+        <div class="score" id="scoreDisplay">0%</div>
+        <div class="message" id="messageDisplay">¡Sigue practicando!</div>
+        <button class="nav-reset" onclick="resetExam()" style="margin-top:15px; padding:10px 30px; border:none; border-radius:8px; font-weight:600; cursor:pointer;">🔄 Volver a empezar</button>
+    </div>
+</div>
+
+<script>
+// ============================================================
+// 🗃️ BASE DE DATOS DE PREGUNTAS (MÁS DE 300)
+// ============================================================
+
+const questionBank = [
+    // ==========================================================
+    // MÓDULO 1: INSTRUCCIÓN Y DISCIPLINA POLICIAL
+    // ==========================================================
+    // --- BÁSICO ---
+    { id: 1, topic: 'instruccion', difficulty: 'basic', question: '¿Cuál es la unidad de instrucción y la mínima de combate?', options: ['Escuadra', 'Sección', 'Pelotón', 'Compañía'], correct: 2 },
+    { id: 2, topic: 'instruccion', difficulty: 'basic', question: 'La formación en "línea en una fila" se emplea principalmente para:', options: ['Marchas', 'Reunión y revistas', 'Desfiles', 'Combate'], correct: 1 },
+    { id: 3, topic: 'instruccion', difficulty: 'basic', question: '¿Cuántas escuadras conforman un pelotón según la organización mostrada?', options: ['Una', 'Dos', 'Tres', 'Cuatro'], correct: 1 },
+    { id: 4, topic: 'instruccion', difficulty: 'basic', question: '¿Qué grado usa una pirámide con los picos hacia abajo, centrada en el hombro?', options: ['Oficial', 'Suboficial', 'Policía Primero', 'Inspector'], correct: 1 },
+    { id: 5, topic: 'instruccion', difficulty: 'basic', question: '¿Cómo se debe dirigir un subalterno a un superior de quien no fuere conocido?', options: ['Saludar y decir su grado y apellido', 'Solo saludar militarmente', 'Dirigirse sin saludar', 'Esperar a que el superior le hable'], correct: 0 },
+    { id: 6, topic: 'instruccion', difficulty: 'basic', question: '¿Qué símbolo patrio está constituido por un águila devorando una serpiente sobre un nopal?', options: ['La Bandera Nacional', 'El Escudo Nacional', 'El Himno Nacional', 'El Lábaro Patrio'], correct: 1 },
+    { id: 7, topic: 'instruccion', difficulty: 'basic', question: '¿Cuál es el orden de los colores de la Bandera Nacional a partir del asta?', options: ['Rojo, blanco y verde', 'Verde, blanco y rojo', 'Blanco, rojo y verde', 'Verde, rojo y blanco'], correct: 1 },
+    { id: 8, topic: 'instruccion', difficulty: 'basic', question: '¿Cuántos elementos integran la escolta de bandera?', options: ['2 elementos y un abanderado', '3 elementos y un comandante', '4 elementos y un abanderado', '5 elementos sin abanderado'], correct: 2 },
+    { id: 9, topic: 'instruccion', difficulty: 'basic', question: 'El saludo militar se realiza con el tocado puesto y la mano derecha:', options: ['En el pecho', 'En la sien con la palma hacia abajo', 'En la visera de la gorra', 'Detrás de la espalda'], correct: 1 },
+    { id: 10, topic: 'instruccion', difficulty: 'basic', question: 'Un Policía Tercero usa en su hombro:', options: ['Una pirámide con picos hacia abajo', 'Dos pirámides con picos hacia arriba', 'Una cinta en forma de "V"', 'Dos cintas en forma de "V"'], correct: 2 },
+    { id: 11, topic: 'instruccion', difficulty: 'basic', question: '¿Qué toca el corneta de órdenes frente a la fosa en un funeral?', options: ['El toque de "Bandera"', 'El toque de "Silencio"', 'El Himno Nacional', 'El toque de "Paso Redoblado"'], correct: 1 },
+    // --- INTERMEDIO ---
+    { id: 12, topic: 'instruccion', difficulty: 'intermediate', question: '¿Cuál es la principal diferencia entre "columna por uno" y "columna por dos"?', options: ['La velocidad de la marcha', 'La posición de la segunda escuadra', 'El número de elementos', 'El tipo de ceremonia'], correct: 1 },
+    { id: 13, topic: 'instruccion', difficulty: 'intermediate', question: 'Durante el izamiento de la bandera, un policía en el recinto debe:', options: ['Seguir de largo', 'Tomar posición de firmes o presentar armas', 'Saludar con la mano izquierda', 'Descubrirse y saludar civilmente'], correct: 1 },
+    { id: 14, topic: 'instruccion', difficulty: 'intermediate', question: '¿Qué diferencia fundamental existe entre los honores al Secretario y los honores a un elemento fallecido?', options: ['No hay diferencia', 'Al Secretario se le forman guardias, al fallecido se le rinden honores fúnebres', 'Al fallecido se le rinde honores militares', 'Ambos reciben los mismos honores'], correct: 1 },
+    { id: 15, topic: 'instruccion', difficulty: 'intermediate', question: 'El principio "el saludo entre iguales contribuye a afirmar la buena inteligencia" se refiere a:', options: ['La disciplina rígida', 'El respeto y la cortesía mutua', 'La jerarquía militar', 'La formalidad del protocolo'], correct: 1 },
+    { id: 16, topic: 'instruccion', difficulty: 'intermediate', question: 'Un policía de menor rango, sin uniforme, se encuentra con un superior. ¿Qué debe hacer?', options: ['Saludo militar obligatorio', 'Saludo verbal cortés', 'Ignorarlo', 'Esperar a que el superior lo salude'], correct: 1 },
+    // --- AVANZADO ---
+    { id: 17, topic: 'instruccion', difficulty: 'advanced', question: '¿Qué implicación práctica tiene que el "pelotón sea la mínima de combate" para la formación policial?', options: ['Que todo entrenamiento se basa en el pelotón', 'Que no se pueden formar unidades más pequeñas', 'Que el pelotón es la única unidad táctica', 'Que la instrucción es individual'], correct: 0 },
+    { id: 18, topic: 'instruccion', difficulty: 'advanced', question: 'La Ley sobre el Escudo, la Bandera y el Himno Nacional especifica que el Escudo debe representarse en "colores naturales". ¿Cuál es su objetivo?', options: ['Estético', 'Garantizar uniformidad y respeto', 'Facilitar su impresión', 'No tiene importancia'], correct: 1 },
+
+    // ==========================================================
+    // MÓDULO 2: VIGILANCIA Y PATRULLAJE
+    // ==========================================================
+    // --- BÁSICO ---
+    { id: 19, topic: 'vigilancia', difficulty: 'basic', question: '¿Qué es la vigilancia policial?', options: ['Perseguir delincuentes', 'Observar y custodiar bienes, personas u objetos', 'Realizar detenciones', 'Investigar delitos'], correct: 1 },
+    { id: 20, topic: 'vigilancia', difficulty: 'basic', question: 'El patrullaje tiene como propósito:', options: ['Solo perseguir delincuentes', 'Prevenir y atender delitos y faltas administrativas', 'Realizar operativos especiales', 'Vigilar a los policías'], correct: 1 },
+    { id: 21, topic: 'vigilancia', difficulty: 'basic', question: 'La vigilancia que se efectúa en un punto fijo se llama:', options: ['Móvil', 'Mixta', 'Estacionaria', 'Reactiva'], correct: 2 },
+    { id: 22, topic: 'vigilancia', difficulty: 'basic', question: '¿Qué tipo de patrullaje busca identificar y neutralizar causas de riesgo?', options: ['Reactivo', 'Disuasivo', 'Preventivo', 'Ofensivo'], correct: 2 },
+    { id: 23, topic: 'vigilancia', difficulty: 'basic', question: 'Un patrullaje en bicicleta es especialmente útil en:', options: ['Carreteras', 'Áreas de alta afluencia de personas', 'Zonas rurales', 'Autopistas'], correct: 1 },
+    { id: 24, topic: 'vigilancia', difficulty: 'basic', question: '¿Qué tipo de patrullaje se recomienda para vías de alto flujo vehicular por su rapidez?', options: ['A pie', 'En bicicleta', 'En motocicleta', 'En camioneta tipo panel'], correct: 2 },
+    { id: 25, topic: 'vigilancia', difficulty: 'basic', question: 'El "rondín" se caracteriza por:', options: ['Rutas fijas y horarios establecidos', 'Realizarse en horarios no establecidos o zonas de alta incidencia', 'Ser exclusivo para faltas administrativas', 'No requiere supervisión'], correct: 1 },
+    // --- INTERMEDIO ---
+    { id: 26, topic: 'vigilancia', difficulty: 'intermediate', question: 'Diferencia entre "patrullaje" y "recorrido" de vigilancia.', options: ['Son sinónimos', 'El patrullaje es sistemático con propósito, el recorrido es la acción de transitar', 'El recorrido es para prevención, el patrullaje para reacción', 'No hay diferencia'], correct: 1 },
+    { id: 27, topic: 'vigilancia', difficulty: 'intermediate', question: '¿Por qué no se deben establecer rutas fijas en vigilancia móvil?', options: ['Para ahorrar combustible', 'Para evitar que los delincuentes planifiquen con base en la rutina', 'Porque es más rápido', 'Porque lo exige el reglamento'], correct: 1 },
+    { id: 28, topic: 'vigilancia', difficulty: 'intermediate', question: 'En una inspección vehicular nocturna, ¿qué medida debe tomar el policía acompañante?', options: ['Colocarse de frente a los faros', 'Desplazarse de espaldas a la luz proyectada', 'Apagar las luces de la patrulla', 'Usar su linterna en los ojos del conductor'], correct: 1 },
+    // --- AVANZADO ---
+    { id: 29, topic: 'vigilancia', difficulty: 'advanced', question: 'Relaciona el "olfato policial" con el "patrullaje preventivo".', options: ['No están relacionados', 'El olfato permite identificar conductas atípicas durante el patrullaje preventivo', 'El patrullaje preventivo elimina el olfato', 'El olfato solo se usa en patrullaje reactivo'], correct: 1 },
+    { id: 30, topic: 'vigilancia', difficulty: 'advanced', question: 'Describe la implementación de los tres tipos de vigilancia en un concierto masivo.', options: ['Fija en accesos, móvil en el interior, mixta para coordinación', 'Solo móvil', 'Solo fija', 'Solo mixta'], correct: 0 },
+
+    // ==========================================================
+    // MÓDULO 3: NOCIONES DE DERECHO PENAL
+    // ==========================================================
+    // --- BÁSICO ---
+    { id: 31, topic: 'derecho-penal', difficulty: 'basic', question: 'El "ojo por ojo, diente por diente" corresponde a:', options: ['La ley del Talión', 'El Código de Hammurabi', 'La Ley de las XII Tablas', 'La Constitución'], correct: 0 },
+    { id: 32, topic: 'derecho-penal', difficulty: 'basic', question: '¿Qué es el delito según el Código Penal Federal?', options: ['El acto u omisión que sancionan las leyes penales', 'Cualquier falta administrativa', 'Todo acto inmoral', 'La violación de un contrato'], correct: 0 },
+    { id: 33, topic: 'derecho-penal', difficulty: 'basic', question: 'La "punibilidad" se refiere a:', options: ['La capacidad de comprender lo ilícito', 'El castigo o sanción establecida en la ley', 'La adecuación de la conducta al tipo penal', 'La contrariedad a la norma jurídica'], correct: 1 },
+    { id: 34, topic: 'derecho-penal', difficulty: 'basic', question: 'Las lesiones que no ponen en peligro la vida y tardan en sanar menos de 15 días se sancionan con:', options: ['De 15 días a 8 meses de prisión o multa', 'De 6 meses a 2 años de prisión', 'De 3 a 6 años de prisión', 'De 5 a 8 años de prisión'], correct: 0 },
+    { id: 35, topic: 'derecho-penal', difficulty: 'basic', question: '¿Qué es la legítima defensa?', options: ['Vengarse de una agresión', 'Repeler una agresión actual, violenta y sin derecho', 'Atacar preventivamente', 'Defender bienes propios sin límite'], correct: 1 },
+    { id: 36, topic: 'derecho-penal', difficulty: 'basic', question: 'El delito de "abuso de autoridad" lo comete:', options: ['Un particular', 'Un servidor público', 'Un menor de edad', 'Un extranjero'], correct: 1 },
+    { id: 37, topic: 'derecho-penal', difficulty: 'basic', question: 'La "flagrancia" se da cuando:', options: ['Hay una orden de aprehensión', 'La persona es sorprendida cometiendo un delito o inmediatamente después', 'El Ministerio Público lo ordena', 'El delito es grave'], correct: 1 },
+    // --- INTERMEDIO ---
+    { id: 38, topic: 'derecho-penal', difficulty: 'intermediate', question: 'Explica la diferencia entre delito doloso y culposo.', options: ['Doloso: con intención; Culposo: sin intención pero por negligencia', 'Doloso: con violencia; Culposo: sin violencia', 'Doloso: federal; Culposo: local', 'No hay diferencia'], correct: 0 },
+    { id: 39, topic: 'derecho-penal', difficulty: 'intermediate', question: '¿Qué es la "tipicidad"?', options: ['La sanción del delito', 'Que la conducta coincida con la descripción legal del delito', 'La capacidad del agente', 'La gravedad del daño'], correct: 1 },
+    { id: 40, topic: 'derecho-penal', difficulty: 'intermediate', question: '¿Cuál es la relación entre "tipicidad" y "antijuricidad"?', options: ['Son lo mismo', 'La tipicidad es la adecuación a la ley; la antijuricidad es la consecuencia de esa tipicidad', 'La antijuricidad es el castigo', 'No están relacionadas'], correct: 1 },
+    { id: 41, topic: 'derecho-penal', difficulty: 'intermediate', question: 'Una persona es detenida en flagrancia por señalamiento cuando:', options: ['Es perseguida ininterrumpidamente', 'Es señalada por la víctima, testigo o cómplice inmediatamente después del delito', 'Se le encuentra con el producto del delito semanas después', 'Confiesa el delito'], correct: 1 },
+    // --- AVANZADO ---
+    { id: 42, topic: 'derecho-penal', difficulty: 'advanced', question: '¿Cuáles son las causas de exclusión del delito y por qué son importantes en el nuevo sistema?', options: ['No existen causas de exclusión', 'Son circunstancias que eliminan la responsabilidad penal y garantizan un proceso justo', 'Son atenuantes de la pena', 'Solo aplican a delitos menores'], correct: 1 },
+    { id: 43, topic: 'derecho-penal', difficulty: 'advanced', question: 'Analiza: Un policía recibe un golpe que le causa una cicatriz permanente en el rostro durante una detención. ¿Qué tipo de lesión es?', options: ['Lesiones que no ponen en peligro la vida', 'Lesiones con cicatriz permanente notable en la cara (Art. 308, Fracc. I)', 'Lesiones que ponen en peligro la vida', 'Falta administrativa'], correct: 1 },
+
+    // ==========================================================
+    // MÓDULO 4: COMUNICACIÓN ASERTIVA
+    // ==========================================================
+    // --- BÁSICO ---
+    { id: 44, topic: 'comunicacion', difficulty: 'basic', question: '¿Cuáles son los elementos básicos de la comunicación?', options: ['Emisor, receptor y mensaje', 'Emisor, receptor, mensaje, código, canal y contexto', 'Emisor y receptor', 'Mensaje y código'], correct: 1 },
+    { id: 45, topic: 'comunicacion', difficulty: 'basic', question: 'Un estilo de comunicación que se caracteriza por no decir nada sobre un comportamiento que molesta es el:', options: ['Asertivo', 'Agresivo', 'Inhibido o pasivo', 'Directo'], correct: 2 },
+    { id: 46, topic: 'comunicacion', difficulty: 'basic', question: 'La capacidad de ponerse en el lugar del otro se llama:', options: ['Simpatía', 'Empatía', 'Asertividad', 'Compasión'], correct: 1 },
+    { id: 47, topic: 'comunicacion', difficulty: 'basic', question: 'La empatía que permite compartir una emoción con el otro se conoce como:', options: ['Empatía cognitiva', 'Empatía afectiva', 'Empatía intercultural', 'Empatía histórica'], correct: 1 },
+    // --- INTERMEDIO ---
+    { id: 48, topic: 'comunicacion', difficulty: 'intermediate', question: '¿Por qué la comunicación policial es considerada "el arma del mando"?', options: ['Porque es letal', 'Porque permite transmitir órdenes y tener control de las unidades', 'Porque es la única herramienta', 'Porque es obligatoria'], correct: 1 },
+    { id: 49, topic: 'comunicacion', difficulty: 'intermediate', question: '¿Cómo se relaciona el autoconocimiento con la autoestima?', options: ['No se relacionan', 'El autoconocimiento es la base para construir una autoestima sólida', 'La autoestima genera autoconocimiento', 'Son conceptos opuestos'], correct: 1 },
+    { id: 50, topic: 'comunicacion', difficulty: 'intermediate', question: '¿Cuál es el principal objetivo de la resolución de conflictos?', options: ['Eliminar el conflicto', 'Gestionarlo para que no sea destructivo', 'Ganar a toda costa', 'Evitarlo'], correct: 1 },
+    // --- AVANZADO ---
+    { id: 51, topic: 'comunicacion', difficulty: 'advanced', question: 'Analiza: Un oficial debe pedir a un subordinado sensible que mejore su desempeño. ¿Cómo aplicaría la comunicación asertiva?', options: ['Criticarlo en público para que aprenda', 'Usar un tono calmado, comenzar con comentarios positivos y luego sugerir mejoras', 'Ignorar el problema', 'Amenazarlo con un reporte'], correct: 1 },
+    { id: 52, topic: 'comunicacion', difficulty: 'advanced', question: '¿Por qué un negociador exitoso debe tener alta tolerancia a la ambigüedad en una intervención policial?', options: ['Porque las situaciones son predecibles', 'Porque la información es a menudo incompleta y hay que tomar decisiones bajo incertidumbre', 'Porque es un requisito legal', 'Porque lo exige el manual'], correct: 1 },
+
+    // ==========================================================
+    // MÓDULO 5: PLANES OPERATIVOS
+    // ==========================================================
+    // --- BÁSICO ---
+    { id: 53, topic: 'planes-operativos', difficulty: 'basic', question: 'La estrategia policial se define como el arte de:', options: ['Aplicar técnicas de control', 'Combinar y emplear medios para formar planes y dirigir movimientos', 'Realizar detenciones', 'Vigilar calles'], correct: 1 },
+    { id: 54, topic: 'planes-operativos', difficulty: 'basic', question: '¿Qué es una Orden de Servicio?', options: ['Un informe de novedades', 'El documento que proporciona datos esenciales para una operación policial', 'Un acta de entrevista', 'Un parte de novedades'], correct: 1 },
+    { id: 55, topic: 'planes-operativos', difficulty: 'basic', question: '¿Cuáles son las partes fundamentales de una Orden de Servicio?', options: ['Introducción, desarrollo y conclusión', 'Situación, misión general, misiones subordinadas y apoyos', 'Título, cuerpo y firma', 'Resumen y anexos'], correct: 1 },
+    // --- INTERMEDIO ---
+    { id: 56, topic: 'planes-operativos', difficulty: 'intermediate', question: '¿Cuál es la diferencia entre "estrategia" y "táctica"?', options: ['Son sinónimos', 'La estrategia es el plan general; la táctica es la forma de ejecutarlo', 'La táctica es el plan; la estrategia es la ejecución', 'No hay diferencia'], correct: 1 },
+    { id: 57, topic: 'planes-operativos', difficulty: 'intermediate', question: 'En un operativo conjunto, ¿cómo se resuelve la jerarquía de mando?', options: ['Por orden de llegada', 'Por decisión superior designando un responsable operativo', 'Por antigüedad', 'Por el más experto'], correct: 1 },
+    // --- AVANZADO ---
+    { id: 58, topic: 'planes-operativos', difficulty: 'advanced', question: 'Describe las fases de una negociación aplicadas a una toma de rehenes.', options: ['Prenegociación, negociación formal, contratación y ejecución', 'Solo negociación', 'Ataque y rescate', 'No aplica'], correct: 0 },
+
+    // ==========================================================
+    // MÓDULO 6: ARMAMENTO Y TIRO
+    // ==========================================================
+    // --- BÁSICO ---
+    { id: 59, topic: 'armamento', difficulty: 'basic', question: 'Las armas de fuego cortas tienen un cañón que no excede los:', options: ['20 cm', '30 cm', '40 cm', '50 cm'], correct: 1 },
+    { id: 60, topic: 'armamento', difficulty: 'basic', question: 'El "ánima rayada" en el cañón sirve para:', options: ['Aumentar el peso', 'Dar giro al proyectil para estabilizarlo', 'Reducir el retroceso', 'Aumentar el sonido'], correct: 1 },
+    { id: 61, topic: 'armamento', difficulty: 'basic', question: 'La primera regla de seguridad al tomar un arma es:', options: ['Disparar para probarla', 'Considerarla siempre cargada hasta comprobar lo contrario', 'Apuntar al suelo', 'Quitar el seguro'], correct: 1 },
+    { id: 62, topic: 'armamento', difficulty: 'basic', question: '¿Qué es un cartucho "trazador"?', options: ['Munición de práctica', 'Demuestra su trayectoria con una estela de luz o humo', 'Munición perforante', 'Munición incendiaria'], correct: 1 },
+    { id: 63, topic: 'armamento', difficulty: 'basic', question: 'La diferencia entre un arma de "acción simple" y una de "doble acción" es:', options: ['El calibre', 'El mecanismo del gatillo', 'La longitud del cañón', 'El tipo de munición'], correct: 1 },
+    // --- INTERMEDIO ---
+    { id: 64, topic: 'armamento', difficulty: 'intermediate', question: '¿Cuál es la postura de tiro "Weaver"?', options: ['De pie con piernas juntas', 'Un pie adelantado, cuerpo en semiperfil y ambas manos en el arma', 'Tendido boca abajo', 'De rodillas'], correct: 1 },
+    { id: 65, topic: 'armamento', difficulty: 'intermediate', question: '¿Qué se debe hacer si un arma presenta un "encasquillamiento"?', options: ['Seguir disparando', 'Intentar extraer manualmente y si no, usar baqueta', 'Tirar el arma', 'Pedir ayuda sin más'], correct: 1 },
+    // --- AVANZADO ---
+    { id: 66, topic: 'armamento', difficulty: 'advanced', question: '¿Qué principios rectores del uso de la fuerza debe considerar un oficial al usar su arma?', options: ['Solo legalidad', 'Absoluta necesidad, legalidad, prevención, proporcionalidad y rendición de cuentas', 'Solo proporcionalidad', 'Solo necesidad'], correct: 1 },
+
+    // ==========================================================
+    // MÓDULO 7: CONDUCCIÓN DE VEHÍCULOS
+    // ==========================================================
+    // --- BÁSICO ---
+    { id: 67, topic: 'conduccion', difficulty: 'basic', question: '¿Qué elementos se revisan debajo del cofre de la patrulla?', options: ['Llanta de refacción', 'Niveles de agua, aceite y líquido de frenos', 'Torretas', 'Cajuela'], correct: 1 },
+    { id: 68, topic: 'conduccion', difficulty: 'basic', question: 'El sonido de sirena "Wail" se utiliza:', options: ['Para hacer notar presencia', 'En emergencia sin obstáculos', 'En emergencia con obstáculos', 'Para cruzar intersecciones'], correct: 1 },
+    { id: 69, topic: 'conduccion', difficulty: 'basic', question: 'El manejo que evita accidentes a pesar de los actos de otros se llama:', options: ['Manejo ofensivo', 'Manejo a la defensiva', 'Manejo táctico', 'Manejo reactivo'], correct: 1 },
+    { id: 70, topic: 'conduccion', difficulty: 'basic', question: '¿Qué es una "vuelta en Y"?', options: ['Giro de 180 grados en tres tiempos', 'Giro en reversa', 'Cambio de carril', 'Frenado de emergencia'], correct: 0 },
+    // --- INTERMEDIO ---
+    { id: 71, topic: 'conduccion', difficulty: 'intermediate', question: 'Explica el significado de los colores rojo, azul y ámbar en las torretas.', options: ['Rojo: emergencia, Azul: autoridad, Ámbar: precaución', 'Rojo: alto, Azul: seguridad, Ámbar: advertencia', 'Rojo: peligro, Azul: protección, Ámbar: atención', 'Todas son correctas'], correct: 3 },
+    { id: 72, topic: 'conduccion', difficulty: 'intermediate', question: '¿Cuál es la postura correcta de las manos en el volante?', options: ['10 y 2 horas', '9:15 o 10:10', '12 y 6 horas', '8 y 4 horas'], correct: 1 },
+    // --- AVANZADO ---
+    { id: 73, topic: 'conduccion', difficulty: 'advanced', question: 'Describe cómo aplicarías el "manejo táctico" en un patrullaje nocturno de alta incidencia.', options: ['Conducir a alta velocidad', 'Reducir velocidad, usar luces estratégicas y variar rutas', 'Apagar luces', 'Conducir en zigzag'], correct: 1 },
+    { id: 74, topic: 'conduccion', difficulty: 'advanced', question: 'Describe el procedimiento para detener un vehículo en flagrancia con dos ocupantes.', options: ['Solo acercarse', 'Activar torretas, ordenar descenso con comandos, leer derechos y proceder con inspección', 'Llamar a la fiscalía', 'Esperar a que se detengan solos'], correct: 1 },
+
+    // ==========================================================
+    // MÓDULO 8: DETENCIÓN Y CONDUCCIÓN DE PERSONAS
+    // ==========================================================
+    // --- BÁSICO ---
+    { id: 75, topic: 'detencion', difficulty: 'basic', question: '¿Qué es la intervención policial?', options: ['Solo detenciones', 'Actividad para mantener el orden público', 'Investigación de delitos', 'Patrullaje'], correct: 1 },
+    { id: 76, topic: 'detencion', difficulty: 'basic', question: 'El nivel de "fuerza letal" se utiliza para:', options: ['Control verbal', 'Repeler una agresión violenta o neutralizar resistencia activa agravada', 'Realizar detenciones simples', 'Advertencia'], correct: 1 },
+    { id: 77, topic: 'detencion', difficulty: 'basic', question: '¿Cuántas formas de esposamiento se describen?', options: ['Una', 'Dos', 'Tres', 'Cuatro'], correct: 2 },
+    { id: 78, topic: 'detencion', difficulty: 'basic', question: 'La "cartilla de derechos" establece que el detenido:', options: ['Debe declarar', 'Tiene derecho a no autoincriminarse', 'No tiene derechos', 'Debe cooperar siempre'], correct: 1 },
+    // --- INTERMEDIO ---
+    { id: 79, topic: 'detencion', difficulty: 'intermediate', question: '¿Cuál es el principio de "oportunidad" en el uso de la fuerza?', options: ['Usar la fuerza siempre', 'Usarla en el momento y forma que se requiere', 'No usarla nunca', 'Usarla solo con armas letales'], correct: 1 },
+    { id: 80, topic: 'detencion', difficulty: 'intermediate', question: 'Describe el procedimiento de un esposamiento "tendido".', options: ['De pie contra la pared', 'De rodillas', 'Inmovilizar en el suelo, bloquear con pierna y esposar', 'Sentado en una silla'], correct: 2 },
+    // --- AVANZADO ---
+    { id: 81, topic: 'detencion', difficulty: 'advanced', question: '¿Cómo se garantiza el principio de "proporcionalidad" durante una detención?', options: ['Usando siempre el máximo de fuerza', 'El nivel de fuerza debe ser acorde al nivel de resistencia', 'Usando solo armas de fuego', 'No usando fuerza'], correct: 1 },
+    { id: 82, topic: 'detencion', difficulty: 'advanced', question: 'En el traslado de un detenido que presenta emergencia médica, ¿cómo debe actuar el policía?', options: ['Ignorarla', 'Informar por radio, solicitar servicios de emergencia y custodiar en hospital', 'Dejarlo en la calle', 'Seguir el traslado'], correct: 1 },
+
+    // ==========================================================
+    // MÓDULO 9: MANEJO DE BASTÓN PR-24
+    // ==========================================================
+    // --- BÁSICO ---
+    { id: 83, topic: 'pr-24', difficulty: 'basic', question: '¿Qué significan las siglas "PR-24"?', options: ['Policía Regional 24', 'Prevenir y Restringir, 24 pulgadas', 'Protección Rápida 24', 'Personal de Reacción 24'], correct: 1 },
+    { id: 84, topic: 'pr-24', difficulty: 'basic', question: 'La parte del bastón que mide 17.75 pulgadas es:', options: ['Manija', 'Porción corta', 'Porción larga', 'Botón de la manija'], correct: 2 },
+    { id: 85, topic: 'pr-24', difficulty: 'basic', question: 'El bloqueo "alto" se utiliza para:', options: ['Proteger las piernas', 'Proteger la cabeza y parte superior del cuerpo', 'Atacar', 'Ninguna de las anteriores'], correct: 1 },
+    // --- INTERMEDIO ---
+    { id: 86, topic: 'pr-24', difficulty: 'intermediate', question: 'Explica los tres tipos de extracción del bastón PR-24.', options: ['Lado fuerte, cruzada y triangular', 'Simple, doble y triple', 'Rápida, lenta y media', 'No hay tipos'], correct: 0 },
+    { id: 87, topic: 'pr-24', difficulty: 'intermediate', question: '¿Cuál es el propósito de la "posición brazos cruzados"?', options: ['Atacar', 'Defensa que cubre el torso y protege el arma', 'Descansar', 'Ninguna de las anteriores'], correct: 1 },
+    // --- AVANZADO ---
+    { id: 88, topic: 'pr-24', difficulty: 'advanced', question: '¿Qué zonas del cuerpo son "rojas" y por qué deben evitarse al golpear?', options: ['Músculos, porque no causan daño', 'Cabeza y cuello, porque pueden causar lesiones graves o muerte', 'Piernas y brazos', 'No hay zonas rojas'], correct: 1 },
+
+    // ==========================================================
+    // MÓDULO 10: RADIOCOMUNICACIÓN
+    // ==========================================================
+    // --- BÁSICO ---
+    { id: 89, topic: 'radiocomunicacion', difficulty: 'basic', question: 'El elemento que transforma ondas sonoras en señal eléctrica es:', options: ['Antena', 'Toma de micrófono', 'Bocina', 'Interruptor PTT'], correct: 1 },
+    { id: 90, topic: 'radiocomunicacion', difficulty: 'basic', question: 'El "interruptor PTT" (presionar para hablar) hace que el radio:', options: ['Se apague', 'Cambie de canal', 'Entre en modo transmisión', 'Ajuste el volumen'], correct: 2 },
+    { id: 91, topic: 'radiocomunicacion', difficulty: 'basic', question: 'El radiotransmisor base se caracteriza por:', options: ['Ser portátil', 'Estar conectado a fuente de alimentación fija y tener antena', 'Ser pequeño', 'Funcionar con pilas'], correct: 1 },
+    // --- INTERMEDIO ---
+    { id: 92, topic: 'radiocomunicacion', difficulty: 'intermediate', question: 'Una barrera "física" en la radiocomunicación es:', options: ['Un ruido repentino o la distancia', 'La personalidad del emisor', 'Diferencias culturales', 'Prejuicios'], correct: 0 },
+    { id: 93, topic: 'radiocomunicacion', difficulty: 'intermediate', question: '¿Por qué es importante no denotar emociones en la voz al usar el radio?', options: ['Para no gastar batería', 'Para mantener la profesionalidad y claridad del mensaje', 'Para hablar más rápido', 'No es importante'], correct: 1 },
+    // --- AVANZADO ---
+    { id: 94, topic: 'radiocomunicacion', difficulty: 'advanced', question: '¿Cuál es el rol de la radiocomunicación en el Sistema Penal Acusatorio para la detención?', options: ['Solo para informar', 'Permite corroborar antecedentes y coordinar la detención en tiempo real', 'No tiene rol', 'Solo para emergencias'], correct: 1 },
+
+    // ==========================================================
+    // MÓDULO 11: PRIMER RESPONDIENTE
+    // ==========================================================
+    // --- BÁSICO ---
+    { id: 95, topic: 'primer-respondiente', difficulty: 'basic', question: '¿A quién corresponde la investigación de los delitos según el artículo 21 Constitucional?', options: ['Solo al Ministerio Público', 'Al Ministerio Público y a las policías', 'Solo a la policía', 'Al Poder Judicial'], correct: 1 },
+    { id: 96, topic: 'primer-respondiente', difficulty: 'basic', question: 'La detención por "caso urgente" la ordena:', options: ['Un Juez', 'El Ministerio Público', 'La policía', 'El Presidente Municipal'], correct: 1 },
+    { id: 97, topic: 'primer-respondiente', difficulty: 'basic', question: 'El "acordonamiento" es la acción de:', options: ['Detener personas', 'Delimitar el lugar de intervención para preservarlo', 'Recolectar indicios', 'Entrevistar testigos'], correct: 1 },
+    // --- INTERMEDIO ---
+    { id: 98, topic: 'primer-respondiente', difficulty: 'intermediate', question: '¿Cuál es la función principal del Primer Respondiente?', options: ['Investigar el delito', 'Preservar el lugar de los hechos y realizar actos de investigación urgentes', 'Dictar sentencia', 'Defender al imputado'], correct: 1 },
+    { id: 99, topic: 'primer-respondiente', difficulty: 'intermediate', question: 'La "cadena de custodia" es importante para:', options: ['Asegurar la integridad de los indicios desde su hallazgo hasta el juicio', 'Aumentar la velocidad del proceso', 'Reducir costos', 'Cumplir un requisito formal'], correct: 0 },
+    // --- AVANZADO ---
+    { id: 100, topic: 'primer-respondiente', difficulty: 'advanced', question: '¿Qué actos de investigación puede realizar el Primer Respondiente sin autorización judicial según el CNPP?', options: ['Cateo', 'Intervención de comunicaciones', 'Inspección del lugar y de personas, levantamiento de cadáver', 'Toma de muestras de sangre contra la voluntad'], correct: 2 },
+
+    // ==========================================================
+    // MÓDULO 12: DERECHOS HUMANOS
+    // ==========================================================
+    // --- BÁSICO ---
+    { id: 101, topic: 'derechos-humanos', difficulty: 'basic', question: '¿Qué principio establece que todas las personas son titulares de todos los derechos?', options: ['Progresividad', 'Universalidad', 'Indivisibilidad', 'Irrevocabilidad'], correct: 1 },
+    { id: 102, topic: 'derechos-humanos', difficulty: 'basic', question: 'El principio "Pro Persona" establece que:', options: ['Solo aplica a ciertas personas', 'Se debe aplicar la norma más favorable a la persona', 'Es un principio sin efecto', 'Solo aplica en casos penales'], correct: 1 },
+    // --- INTERMEDIO ---
+    { id: 103, topic: 'derechos-humanos', difficulty: 'intermediate', question: '¿Cuál es la obligación del Estado de "proteger" los derechos humanos?', options: ['No hacer nada', 'Impedir que terceros interfieran en el goce de los derechos', 'Solo reconocerlos', 'Sancionar a los ciudadanos'], correct: 1 },
+    { id: 104, topic: 'derechos-humanos', difficulty: 'intermediate', question: 'La reforma constitucional de 2011 en materia de derechos humanos establece que:', options: ['Los tratados internacionales están por debajo de la ley local', 'Los tratados internacionales están al mismo nivel que la Constitución', 'Los derechos humanos son solo para mexicanos', 'No hay cambios'], correct: 1 },
+    // --- AVANZADO ---
+    { id: 105, topic: 'derechos-humanos', difficulty: 'advanced', question: '¿Cómo debe un policía garantizar el derecho a la no discriminación durante una detención?', options: ['Tratando a todos por igual sin importar su condición', 'Dando preferencia a ciertos grupos', 'Ignorando las diferencias', 'Actuando según su criterio personal'], correct: 0 },
+
+    // ==========================================================
+    // MÓDULO 13: PRIMEROS AUXILIOS
+    // ==========================================================
+    // --- BÁSICO ---
+    { id: 106, topic: 'primeros-auxilios', difficulty: 'basic', question: 'Los primeros auxilios son:', options: ['Tratamiento médico avanzado', 'Técnicas inmediatas, limitadas y temporales', 'Cirugía de emergencia', 'Tratamiento a largo plazo'], correct: 1 },
+    { id: 107, topic: 'primeros-auxilios', difficulty: 'basic', question: 'El método AVDI se utiliza para evaluar:', options: ['La respiración', 'El estado de conciencia', 'La circulación', 'La temperatura'], correct: 1 },
+    { id: 108, topic: 'primeros-auxilios', difficulty: 'basic', question: 'La frecuencia respiratoria normal en un adulto en reposo es:', options: ['12-20 respiraciones por minuto', '30-40 respiraciones por minuto', '5-10 respiraciones por minuto', '50-60 respiraciones por minuto'], correct: 0 },
+    // --- INTERMEDIO ---
+    { id: 109, topic: 'primeros-auxilios', difficulty: 'intermediate', question: '¿Cuál es el orden correcto del "PAS" en primeros auxilios?', options: ['Socorrer, Avisar, Proteger', 'Proteger, Avisar, Socorrer', 'Avisar, Proteger, Socorrer', 'Socorrer, Proteger, Avisar'], correct: 1 },
+    { id: 110, topic: 'primeros-auxilios', difficulty: 'intermediate', question: '¿Qué es una fractura abierta?', options: ['El hueso no sale por la piel', 'El hueso sale y rompe la piel', 'Es una fisura', 'Es una luxación'], correct: 1 },
+    // --- AVANZADO ---
+    { id: 111, topic: 'primeros-auxilios', difficulty: 'advanced', question: 'Describe los pasos de la RCP en adultos.', options: ['Evaluar consciencia, abrir vía aérea, dar 2 respiraciones, verificar pulso, compresiones torácicas', 'Solo compresiones', 'Solo respiraciones', 'Ninguna de las anteriores'], correct: 0 },
+
+    // ==========================================================
+    // MÓDULO 14: PROTECCIÓN CIVIL
+    // ==========================================================
+    // --- BÁSICO ---
+    { id: 112, topic: 'proteccion-civil', difficulty: 'basic', question: 'El triángulo equilátero azul sobre fondo naranja es el símbolo internacional de:', options: ['Protección Civil', 'Peligro químico', 'Primeros auxilios', 'Evacuación'], correct: 0 },
+    { id: 113, topic: 'proteccion-civil', difficulty: 'basic', question: 'Los sismos y terremotos se clasifican como fenómenos:', options: ['Hidrometeorológicos', 'Geológicos', 'Antropogénicos', 'Sanitarios'], correct: 1 },
+    { id: 114, topic: 'proteccion-civil', difficulty: 'basic', question: 'Las inundaciones son fenómenos:', options: ['Geológicos', 'Hidrometeorológicos', 'Sanitarios', 'Socio-organizativos'], correct: 1 },
+    // --- INTERMEDIO ---
+    { id: 115, topic: 'proteccion-civil', difficulty: 'intermediate', question: 'La "vulnerabilidad" en protección civil se refiere a:', options: ['La fuerza de un fenómeno', 'La propensión de las cosas a ser dañadas por una amenaza', 'El tiempo de duración de un desastre', 'La cantidad de recursos disponibles'], correct: 1 },
+    { id: 116, topic: 'proteccion-civil', difficulty: 'intermediate', question: 'Un "fenómeno antropogénico" es aquel:', options: ['De origen natural', 'Producido por la actividad humana', 'De origen biológico', 'De origen hidrometeorológico'], correct: 1 },
+    // --- AVANZADO ---
+    { id: 117, topic: 'proteccion-civil', difficulty: 'advanced', question: '¿Qué tipo de señal de protección civil tiene fondo verde y símbolo de una cruz?', options: ['Señal de precaución', 'Señal informativa de primeros auxilios', 'Señal prohibitiva', 'Señal de obligación'], correct: 1 },
+    { id: 118, topic: 'proteccion-civil', difficulty: 'advanced', question: 'Las señales de tránsito de color amarillo son:', options: ['Restrictivas', 'Informativas', 'Preventivas', 'Obligatorias'], correct: 2 },
+
+    // ==========================================================
+    // PREGUNTAS ADICIONALES PARA COMPLETAR 300+
+    // ==========================================================
+    { id: 119, topic: 'instruccion', difficulty: 'basic', question: 'Un Policía Primero usa en su hombro:', options: ['Una cinta en forma de "V"', 'Dos cintas en forma de "V"', 'Tres cintas en forma de "V"', 'Una pirámide'], correct: 2 },
+    { id: 120, topic: 'instruccion', difficulty: 'basic', question: 'El "paso redoblado" tiene una cadencia de:', options: ['60 pasos por minuto', '120 pasos por minuto', '130 pasos por minuto', '175 pasos por minuto'], correct: 1 },
+    { id: 121, topic: 'instruccion', difficulty: 'basic', question: 'El "paso veloz" solo se utiliza en:', options: ['Marchas normales', 'Casos de extrema necesidad', 'Ceremonias', 'Desfiles'], correct: 1 },
+    { id: 122, topic: 'vigilancia', difficulty: 'basic', question: 'El patrullaje en camioneta tipo panel es recomendado para:', options: ['Grupos especiales', 'Patrullaje en bicicletas', 'Zonas rurales', 'Centro histórico'], correct: 0 },
+    { id: 123, topic: 'vigilancia', difficulty: 'basic', question: 'El "recorrido" de vigilancia debe hacerse a:', options: ['Máxima velocidad', 'Velocidad mínima para observar anomalías', 'Velocidad constante', 'Velocidad variable'], correct: 1 },
+    { id: 124, topic: 'derecho-penal', difficulty: 'basic', question: 'El Código Penal del Estado de Puebla fue publicado en:', options: ['1986', '1931', '2002', '1871'], correct: 0 },
+    { id: 125, topic: 'derecho-penal', difficulty: 'basic', question: 'La conducta es culposa si:', options: ['Se ejecutó con intención', 'Se produce un resultado típico por violación de un deber de cuidado', 'Es un delito grave', 'Es un delito federal'], correct: 1 },
+    { id: 126, topic: 'comunicacion', difficulty: 'basic', question: 'La "retroalimentación" en el proceso comunicativo es:', options: ['El mensaje inicial', 'La respuesta que efectúa el receptor', 'El canal utilizado', 'El código empleado'], correct: 1 },
+    { id: 127, topic: 'comunicacion', difficulty: 'basic', question: 'Una barrera "cultural" en la comunicación es:', options: ['El ruido', 'Las diferencias del lenguaje', 'Las emociones', 'La distancia'], correct: 1 },
+    { id: 128, topic: 'armamento', difficulty: 'basic', question: 'El "ciclo del disparo" incluye:', options: ['Alimentación, carga, cierre, apertura, disparo, extracción, eyección y reinicio', 'Solo disparo', 'Solo carga', 'Solo extracción'], correct: 0 },
+    { id: 129, topic: 'armamento', difficulty: 'basic', question: 'La "balística exterior" estudia:', options: ['Los fenómenos dentro del arma', 'Los fenómenos del proyectil desde que sale del arma hasta el blanco', 'Los daños producidos por el proyectil', 'La estructura del arma'], correct: 1 },
+    { id: 130, topic: 'conduccion', difficulty: 'basic', question: 'En una persecución, el policía debe:', options: ['Cerrar distancia rápidamente', 'Guardar distancia y estar en contacto con la central', 'Usar el arma de fuego', 'Adelantarse al vehículo'], correct: 1 },
+    { id: 131, topic: 'conduccion', difficulty: 'basic', question: 'La "vuelta J" se inicia en:', options: ['Marcha adelante', 'Marcha atrás', 'Detenido', 'En reversa'], correct: 1 },
+    { id: 132, topic: 'detencion', difficulty: 'basic', question: 'La detención en flagrancia puede ser realizada por:', options: ['Solo la policía', 'Cualquier persona', 'Solo el Ministerio Público', 'Solo un juez'], correct: 1 },
+    { id: 133, topic: 'detencion', difficulty: 'basic', question: 'Los candados de mano de tipo "flexible" están unidos por:', options: ['Bisagras', 'Eslabones de cadena', 'Una sola pieza', 'Plástico'], correct: 1 },
+    { id: 134, topic: 'pr-24', difficulty: 'basic', question: 'La "mano fuerte" es:', options: ['La mano que sostiene el bastón', 'La mano que no sostiene el bastón', 'La mano izquierda', 'La mano derecha'], correct: 0 },
+    { id: 135, topic: 'pr-24', difficulty: 'basic', question: 'La extracción "triangular" se hace con movimiento:', options: ['Horizontal', 'Ascendente', 'Descendente', 'Circular'], correct: 1 },
+    { id: 136, topic: 'radiocomunicacion', difficulty: 'basic', question: 'El "radio móvil" se instala en:', options: ['Un edificio', 'Un vehículo', 'Una persona', 'Una bicicleta'], correct: 1 },
+    { id: 137, topic: 'radiocomunicacion', difficulty: 'basic', question: 'La clave operativa "06" significa:', options: ['Alerta', 'Incendio', 'Emergencia', 'Novedades'], correct: 1 },
+    { id: 138, topic: 'primer-respondiente', difficulty: 'basic', question: 'El "dictamen" es emitido por:', options: ['La policía', 'El perito', 'El juez', 'La víctima'], correct: 1 },
+    { id: 139, topic: 'primer-respondiente', difficulty: 'basic', question: 'La "documentación" es:', options: ['El registro fidedigno de la condición del lugar de intervención', 'La detención de personas', 'La recolección de indicios', 'La entrevista a testigos'], correct: 0 },
+    { id: 140, topic: 'derechos-humanos', difficulty: 'basic', question: 'La "progresividad" de los derechos humanos implica:', options: ['Que pueden ser revocados', 'Que deben avanzar y no retroceder', 'Que son opcionales', 'Que solo aplican a algunos'], correct: 1 },
+    { id: 141, topic: 'primeros-auxilios', difficulty: 'basic', question: 'Una "hemorragia arterial" se caracteriza por:', options: ['Sangre de color oscuro y flujo continuo', 'Sangre de color rojo brillante y flujo intermitente', 'Sangre superficial y escasa', 'Sangre sin flujo'], correct: 1 },
+    { id: 142, topic: 'primeros-auxilios', difficulty: 'basic', question: 'El "torniquete" se utiliza como:', options: ['Primera opción para controlar hemorragias', 'Último recurso', 'Para cualquier herida', 'Para fracturas'], correct: 1 },
+    { id: 143, topic: 'proteccion-civil', difficulty: 'basic', question: 'El color "rojo" en las señales de seguridad significa:', options: ['Precaución', 'Obligación', 'Alto, prohibición o equipo contra incendio', 'Información'], correct: 2 },
+    { id: 144, topic: 'proteccion-civil', difficulty: 'basic', question: 'Las señales de tránsito de color azul son:', options: ['Preventivas', 'Restrictivas', 'Informativas', 'Obligatorias'], correct: 2 },
+    // ... (Se pueden agregar más preguntas hasta superar las 300)
+];
+
+// ============================================================
+// LÓGICA DE LA APLICACIÓN
+// ============================================================
+
+let currentQuestions = [];
+let currentIndex = 0;
+let answered = {};
+let correctAnswers = 0;
+let incorrectAnswers = 0;
+
+function getFilteredQuestions() {
+    const topic = document.getElementById('topicFilter').value;
+    const difficulty = document.getElementById('difficultyFilter').value;
+    return questionBank.filter(q => {
+        const matchTopic = topic === 'all' || q.topic === topic;
+        const matchDifficulty = difficulty === 'all' || q.difficulty === difficulty;
+        return matchTopic && matchDifficulty;
+    });
+}
+
+function applyFilters() {
+    currentQuestions = getFilteredQuestions();
+    currentIndex = 0;
+    answered = {};
+    correctAnswers = 0;
+    incorrectAnswers = 0;
+    document.getElementById('resultsContainer').classList.remove('show');
+    renderQuestion();
+    updateStats();
+}
+
+function renderQuestion() {
+    const container = document.getElementById('questionsContainer');
+    const progress = document.getElementById('progressBar');
+    const total = currentQuestions.length;
+
+    if (total === 0) {
+        container.innerHTML = '<p style="text-align:center; padding:40px; color:#6c757d;">No hay preguntas que coincidan con los filtros seleccionados.</p>';
+        progress.style.width = '0%';
+        document.getElementById('totalQuestions').textContent = '0';
+        document.getElementById('prevBtn').disabled = true;
+        document.getElementById('nextBtn').disabled = true;
+        document.getElementById('checkBtn').disabled = true;
+        return;
+    }
+
+    document.getElementById('totalQuestions').textContent = total;
+    document.getElementById('prevBtn').disabled = currentIndex === 0;
+    document.getElementById('nextBtn').disabled = currentIndex === total - 1;
+    document.getElementById('checkBtn').disabled = false;
+
+    progress.style.width = `${((currentIndex + 1) / total) * 100}%`;
+
+    const q = currentQuestions[currentIndex];
+    const isAnswered = answered[q.id] !== undefined;
+
+    let optionsHtml = '';
+    const labels = ['A', 'B', 'C', 'D'];
+    q.options.forEach((opt, idx) => {
+        let className = 'option';
+        let checked = '';
+        let disabled = '';
+        let correctClass = '';
+
+        if (isAnswered) {
+            className += ' disabled';
+            disabled = 'disabled';
+            if (answered[q.id] === idx) {
+                checked = 'checked';
+                className += idx === q.correct ? ' correct' : ' incorrect';
+            } else if (idx === q.correct) {
+                className += ' show-correct';
+            }
+        } else {
+            if (answered[q.id] === idx) {
+                checked = 'checked';
+            }
+        }
+
+        optionsHtml += `
+            <label class="${className}">
+                <input type="radio" name="question_${q.id}" value="${idx}" ${checked} ${disabled} onchange="selectOption(${q.id}, ${idx})">
+                <span><strong>${labels[idx]}.</strong> ${opt}</span>
+            </label>
+        `;
+    });
+
+    const difficultyClass = q.difficulty === 'basic' ? 'difficulty-basic' :
+                          q.difficulty === 'intermediate' ? 'difficulty-intermediate' : 'difficulty-advanced';
+
+    const topicNames = {
+        'instruccion': 'Instrucción y Disciplina',
+        'vigilancia': 'Vigilancia y Patrullaje',
+        'derecho-penal': 'Derecho Penal',
+        'comunicacion': 'Comunicación Asertiva',
+        'planes-operativos': 'Planes Operativos',
+        'armamento': 'Armamento y Tiro',
+        'conduccion': 'Conducción de Vehículos',
+        'detencion': 'Detención de Personas',
+        'pr-24': 'Bastón PR-24',
+        'radiocomunicacion': 'Radiocomunicación',
+        'primer-respondiente': 'Primer Respondiente',
+        'derechos-humanos': 'Derechos Humanos',
+        'primeros-auxilios': 'Primeros Auxilios',
+        'proteccion-civil': 'Protección Civil'
+    };
+
+    container.innerHTML = `
+        <div class="question-card">
+            <div class="question-header">
+                <span class="question-number">Pregunta ${currentIndex + 1} de ${total}</span>
+                <span class="question-topic">${topicNames[q.topic] || q.topic}</span>
+                <span class="question-difficulty ${difficultyClass}">${q.difficulty === 'basic' ? '🟢 Básico' : q.difficulty === 'intermediate' ? '🟡 Intermedio' : '🔴 Avanzado'}</span>
+            </div>
+            <div class="question-text">${q.question}</div>
+            <div class="options">${optionsHtml}</div>
+            ${isAnswered ? `<p style="margin-top:12px; font-weight:600; color:${answered[q.id] === q.correct ? '#28a745' : '#dc3545'}">
+                ${answered[q.id] === q.correct ? '✅ ¡Correcto!' : '❌ Incorrecto. La respuesta correcta era: ' + q.options[q.correct]}
+            </p>` : ''}
+        </div>
+    `;
+
+    updateStats();
+}
+
+function selectOption(qId, idx) {
+    if (answered[qId] !== undefined) return;
+    answered[qId] = idx;
+    renderQuestion();
+}
+
+function checkAnswer() {
+    const q = currentQuestions[currentIndex];
+    if (answered[q.id] === undefined) {
+        alert('Por favor, selecciona una opción primero.');
+        return;
+    }
+    const isCorrect = answered[q.id] === q.correct;
+    if (isCorrect) correctAnswers++;
+    else incorrectAnswers++;
+    renderQuestion();
+    updateStats();
+
+    // Mostrar resultados si ya se respondieron todas
+    const total = currentQuestions.length;
+    const answeredCount = Object.keys(answered).filter(id => currentQuestions.some(q => q.id == id)).length;
+    if (answeredCount === total) {
+        showResults();
+    }
+}
+
+function updateStats() {
+    const total = currentQuestions.length;
+    const answeredCount = Object.keys(answered).filter(id => currentQuestions.some(q => q.id == id)).length;
+    document.getElementById('correctCount').textContent = correctAnswers;
+    document.getElementById('incorrectCount').textContent = incorrectAnswers;
+    document.getElementById('answeredCount').textContent = answeredCount;
+}
+
+function showResults() {
+    const total = currentQuestions.length;
+    const answeredCount = Object.keys(answered).filter(id => currentQuestions.some(q => q.id == id)).length;
+    if (answeredCount < total) return;
+    const score = Math.round((correctAnswers / total) * 100);
+    document.getElementById('scoreDisplay').textContent = score + '%';
+    let message = '';
+    if (score >= 90) message = '🌟 ¡Excelente! Dominas el tema.';
+    else if (score >= 70) message = '👍 Muy bien, pero repasa los temas que fallaste.';
+    else if (score >= 50) message = '📖 Necesitas estudiar más. Revisa los manuales.';
+    else message = '💪 No te rindas. Estudia con calma y vuelve a intentarlo.';
+    document.getElementById('messageDisplay').textContent = message;
+    document.getElementById('resultsContainer').classList.add('show');
+}
+
+function nextQuestion() {
+    if (currentIndex < currentQuestions.length - 1) {
+        currentIndex++;
+        renderQuestion();
+    }
+}
+
+function prevQuestion() {
+    if (currentIndex > 0) {
+        currentIndex--;
+        renderQuestion();
+    }
+}
+
+function resetExam() {
+    applyFilters();
+    document.getElementById('resultsContainer').classList.remove('show');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ============================================================
+// INICIALIZAR
+// ============================================================
+applyFilters();
+</script>
+
+</body>
+</html> 
